@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Me</title>
+
+  <!-- Font Awesome für Icons (CDN) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-..."
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    /* --- Reset/Box-Sizing --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* --- Body als Flex-Container, um den Inhalt zu zentrieren --- */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;  /* Oben ausrichten, damit Platz für Timeline da ist */
+      min-height: 100vh;
+      position: relative;       /* Für absolute Positionierung der Sidebar/Logo */
+      background-color: #000;
+      font-family: sans-serif;
+      color: #fff;
+    }
+
+    /* --- Sidebar links (fest) --- */
+    .sidebar {
+      position: fixed;
+      top: 50%;           
+      left: 0;            
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      background-color: #000;
+      border: 2px solid #2222ff; 
+      border-radius: 8px;
+      padding: 20px 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 24px;  
+      transition: color 0.2s, transform 0.2s;
+    }
+    .sidebar a:hover {
+      color: #40c9ff;
+      transform: scale(1.1);
+    }
+
+    /* --- Logo oben in der Mitte --- */
+    .logo-wrapper {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      z-index: 5;
+    }
+    .logo-wrapper img {
+      width: 150px; 
+      height: auto;
+    }
+
+    /* --- Hauptcontainer für den Inhalt der About-Me-Seite --- */
+    .about-container {
+      max-width: 800px;
+      margin: 100px auto 50px auto; 
+      background: linear-gradient(#212121, #000000) padding-box,
+                  linear-gradient(145deg, transparent 35%, #120eff, #15bdff) border-box;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 32px 24px;
+      margin-top: 5%;
+    }
+    .about-container h1 {
+      margin-bottom: 16px;
+    }
+    .about-container p {
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* --- Überschrift für den Zeitstrahl --- */
+    .timeline-heading {
+      text-align: center;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* --- Wrapper für den Zeitstrahl --- */
+    .timeline {
+      position: relative;
+      margin: 0 auto;
+      padding: 0 0 30px 0;
+      width: 90%;
+      max-width: 700px;
+    }
+
+    /* --- Vertikale Linie --- */
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 20px;            
+      top: 0;
+      bottom: 0;
+      width: 4px;           
+      background: #414141;  
+      border-radius: 2px;
+      transform: translateX(-50%);
+    }
+
+    /* --- Einzelner Abschnitt im Zeitstrahl --- */
+    .timeline-item {
+      position: relative;
+      margin-bottom: 50px;
+      padding-left: 60px; 
+    }
+
+    /* --- Kreis / Icon an der Linie --- */
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #15bdff;  
+      transform: translateX(-50%);
+    }
+
+    /* --- Titel jedes Zeitstrahlpunkts --- */
+    .timeline-item h3 {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    /* --- Datum oder Zeitraum --- */
+    .timeline-item .date {
+      font-size: 0.85rem;
+      color: #717171;
+      margin-bottom: 8px;
+    }
+
+    /* =====================================
+       MEDIA QUERIES FÜR RESPONSIVE DESIGN
+    ====================================== */
+
+    /* --- Kleiner als 900px: Sidebar oben, horizontal --- */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+      .sidebar {
+        position: static;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+      .logo-wrapper {
+        position: static;
+        margin-top: 10px;
+      }
+      .about-container {
+        margin: 20px;
+        width: calc(100% - 40px);
+      }
+      /* Timeline links schmales Layout */
+      .timeline::before {
+        left: 10px;
+      }
+      .timeline-item {
+        padding-left: 40px;
+      }
+      .timeline-item::before {
+        left: 10px;
+      }
+    }
+
+    /* --- Kleiner als 600px: Schriftgröße etwas reduzieren --- */
+    @media (max-width: 600px) {
+      .about-container {
+        padding: 24px 16px;
+      }
+      .about-container h1 {
+        font-size: 1.4rem;
+      }
+      .timeline-item h3 {
+        font-size: 1rem;
+      }
+      .timeline-heading {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Vertikale Sidebar links -->
+  <div class="sidebar">
+    <a href="projekte.html" title="Home">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="aboutme.html" title="About Me">
+      <i class="fas fa-user"></i>
+    </a>
+    <a href="contact.html" title="Contact Me">
+      <i class="fas fa-envelope"></i>
+    </a>
+  </div>
+
+  <!-- Logo oben mittig -->
+  <div class="logo-wrapper">
+    <img src="logo.png" alt="Yannik Services Logo" />
+  </div>
+
+  <!-- Hauptinhalt About Me -->
+  <div class="about-container">
+    <h1>Über mich</h1>
+    <p>
+      Hallo! Ich bin Yannik (oder dein Name), leidenschaftlicher Entwickler und
+      stets auf der Suche nach neuen Herausforderungen. Bereits in jungen Jahren
+      habe ich mich für Technik, Design und Problemlösungen begeistert. Auf dieser Seite
+      erhältst du einen kleinen Einblick in meinen Werdegang.
+    </p>
+
+    <!-- Zeitstrahl -->
+    <div class="timeline-heading">Mein Werdegang</div>
+    <div class="timeline">
+      <!-- Beispiel-Punkt 1 -->
+      <div class="timeline-item">
+        <h3>Erste Schritte in der IT</h3>
+        <div class="date">2010 - 2012</div>
+        <p>
+          Schon in meiner Schulzeit habe ich angefangen, kleine Webseiten zu erstellen
+          und erste eigene Programme zu schreiben. Hier entstand meine Faszination für Code.
+        </p>
+      </div>
+
+      <!-- Beispiel-Punkt 2 -->
+      <div class="timeline-item">
+        <h3>Ausbildung & Studium</h3>
+        <div class="date">2013 - 2017</div>
+        <p>
+          Ich entschied mich für eine Ausbildung als Fachinformatiker und habe später
+          mein Wissen durch ein Studium im Bereich Softwareentwicklung vertieft.
+        </p>
+      </div>
+
+      <!-- Beispiel-Punkt 3 -->
+      <div class="timeline-item">
+        <h3>Berufserfahrungen</h3>
+        <div class="date">seit 2018</div>
+        <p>
+          Während meiner beruflichen Laufbahn arbeitete ich in verschiedenen Projekten:
+          von kleinen Start-ups bis hin zu großen Unternehmen. Dabei sammelte ich wertvolle
+          Erfahrungen in modernen Webtechnologien, App-Entwicklung und Softwarearchitektur.
+        </p>
+      </div>
+
+      <!-- Beispiel-Punkt 4 -->
+      <div class="timeline-item">
+        <h3>Selbstständigkeit</h3>
+        <div class="date">seit 2021</div>
+        <p>
+          Heute biete ich meine Dienstleistungen als Freelancer an und helfe 
+          Unternehmen sowie Privatpersonen, ihre Projekte effizient umzusetzen.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      Wenn du mehr über mich erfahren möchtest oder eine konkrete Projektidee hast, 
+      freue ich mich, von dir zu hören. Schau gerne auf der Kontaktseite vorbei!
+    </p>
+  </div>
+</body>
+</html>

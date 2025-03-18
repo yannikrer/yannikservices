@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abgeschlossene Projekte</title>
+
+  <!-- Font Awesome für Icons (CDN) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-..."
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    /* --- Grundlegender Reset/Box-Sizing --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* --- Body als Flex-Container, um das Haupt-Layout zu zentrieren --- */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      position: relative;  /* Für die absolute Positionierung der Sidebar/Logo */
+      background-color: #000;
+      font-family: sans-serif;
+      color: #fff;
+    }
+
+    /* --- Sidebar links (fixiert) --- */
+    .sidebar {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      background-color: #000;
+      border: 2px solid #2222ff;
+      border-radius: 8px;
+      padding: 20px 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 24px; /* Icon-Größe */
+      transition: color 0.2s, transform 0.2s;
+    }
+    .sidebar a:hover {
+      color: #40c9ff;
+      transform: scale(1.1);
+    }
+
+    /* --- Logo oben in der Mitte --- */
+    .logo-wrapper {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      z-index: 5; /* liegt über dem Inhalt */
+    }
+    .logo-wrapper img {
+      width: 150px; /* Logo-Breite anpassen */
+      height: auto;
+    }
+
+    /* 
+      --- Container für den Inhalt ---
+      Farbverlauf im Rand, runde Ecken, max-width, etc.
+    */
+    .projects-container {
+      max-width: 800px;
+      margin: 100px auto 50px;
+      background: linear-gradient(#212121, #000000) padding-box,
+                  linear-gradient(145deg, transparent 35%, #120eff, #15bdff) border-box;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 6%;
+    }
+
+    .projects-container h1 {
+      margin-bottom: 16px;
+    }
+    .projects-container p {
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* --- Projekte-Grid --- */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    /* --- Einzelnes Projekt / Card --- */
+    .project-card {
+      background-color: #000;
+      border: 1px solid #414141;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .project-card:hover {
+      border-color: #15bdff; /* Hover-Effekt am Rahmen */
+      transform: translateY(-2px);
+    }
+    .project-card img {
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid #414141;
+    }
+    .project-card h3 {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+    .project-card p {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #cfcfcf;
+    }
+    .project-link {
+      margin-top: auto; /* "Drückt" den Button-Link nach unten, wenn der Text länger ist */
+      align-self: flex-start;
+      background-color: #313131;
+      border: 1px solid #414141;
+      color: #cfcfcf;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      cursor: pointer; /* Wichtig für modalen "Button" */
+    }
+    .project-link:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* --- Modal-Overlay (ausgeblendet standardmäßig) --- */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 999; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: rgba(0, 0, 0, 0.7); /* Transparenter Overlay */
+      justify-content: center; 
+      align-items: center; 
+    }
+
+    /* --- Modal-Inhalt (Design ähnlich .projects-container) --- */
+    .modal-content {
+      background: linear-gradient(#212121, #000000) padding-box,
+                  linear-gradient(145deg, transparent 35%, #120eff, #15bdff) border-box;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 32px 24px;
+      max-width: 600px;
+      width: 90%;
+      position: relative; /* Für den Close-Button */
+      color: #fff; 
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+    .modal-content h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .modal-content h3 {
+      font-size: 1.25rem;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      color: #fff;
+      font-weight: bold;
+    }
+    .modal-content p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e0e0e0;
+      margin-bottom: 1rem;
+    }
+
+    /* --- Schließen-Button (X) oben rechts im Modal --- */
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+      transition: color 0.2s;
+    }
+    .close-btn:hover {
+      color: #40c9ff;
+    }
+
+    /* =====================================
+       MEDIA QUERIES FÜR RESPONSIVE DESIGN
+    ====================================== */
+
+    /* --- Kleiner als ca. 1100px: Sidebar verkleinern oder horizontale Navigation --- */
+    @media (max-width: 1100px) {
+      .projects-container {
+        margin-top: 12%;
+      }
+    }
+
+    /* --- Kleiner als 900px: Sidebar wird oben platziert, horizontal --- */
+    @media (max-width: 900px) {
+      .sidebar {
+        position: static;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        border-radius: 0;
+        border: none;
+        gap: 20px;
+        box-shadow: none;
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+      .logo-wrapper {
+        position: static;
+        margin-top: 10px;
+      }
+      /* Container etwas anpassen */
+      .projects-container {
+        margin: 20px;
+        width: calc(100% - 40px);
+      }
+    }
+
+    /* --- Noch kleiner: Grid auf 1 Spalte (z. B. Smartphones) --- */
+    @media (max-width: 600px) {
+      .projects-grid {
+        grid-template-columns: 1fr; 
+      }
+      .project-card {
+        padding: 16px;
+      }
+      .modal-content h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Vertikale Sidebar links -->
+  <div class="sidebar">
+    <a href="projekte.html" title="Home">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="aboutme.html" title="About Me">
+      <i class="fas fa-user"></i>
+    </a>
+    <a href="contact.html" title="Contact Me">
+      <i class="fas fa-envelope"></i>
+    </a>
+  </div>
+
+  <!-- Logo oben mittig -->
+  <div class="logo-wrapper">
+    <img src="logo.png" alt="Yannik Services Logo" />
+  </div>
+
+  <!-- Hauptinhalt für abgeschlossene Projekte -->
+  <div class="projects-container">
+    <h1>Abgeschlossene Projekte</h1>
+    <p>
+      Hier findest du eine Übersicht meiner bereits abgeschlossenen Projekte. 
+      Jedes Projekt war einzigartig und hat neue Herausforderungen mit sich 
+      gebracht. Gerne stehe ich auch dir mit meiner Expertise zur Verfügung.
+    </p>
+
+    <!-- Grid mit Projekt-Cards -->
+    <div class="projects-grid">
+
+      <!-- Projekt 1 -->
+      <div class="project-card">
+        <img src="web1.png" alt="Screenshot Projekt 1" />
+        <h3>Projekt 1: Web-App für Online-Shopping</h3>
+        <p>
+          Entwicklung einer responsiven Web-App für einen Online-Shop.
+          Fokus lag auf UX/UI-Design, Produktverwaltung und einem
+          benutzerfreundlichen Checkout-Prozess.
+        </p>
+        <!-- Button, der das zugehörige Modal öffnet -->
+        <div class="project-link" onclick="openModal('modal1')">Mehr dazu</div>
+      </div>
+
+      <!-- Projekt 2 -->
+      <div class="project-card">
+        <img src="pro2.png" alt="Screenshot Projekt 2" />
+        <h3>Projekt 2: Firmenwebsite</h3>
+        <p>
+          Umsetzung einer mehrsprachigen Firmenwebsite inklusive SEO-Optimierung.
+          Einfache Pflege durch ein individuelles CMS-Modul.
+        </p>
+        <div class="project-link" onclick="openModal('modal2')">Mehr dazu</div>
+      </div>
+
+      <!-- Projekt 3 -->
+      <div class="project-card">
+        <img src="pro3.png" alt="Screenshot Projekt 3" />
+        <h3>Projekt 3: Mobile App</h3>
+        <p>
+          Native Android-App, die Nutzern das Verwalten von persönlichen
+          Aufgaben und Terminen ermöglicht. Inklusive Push-Benachrichtigungen.
+        </p>
+        <div class="project-link" onclick="openModal('modal3')">Mehr dazu</div>
+      </div>
+
+      <!-- Projekt 4 -->
+      <div class="project-card">
+        <img src="pro4.jpg" alt="Screenshot Projekt 4" />
+        <h3>Projekt 4: Individualsoftware</h3>
+        <p>
+          Eine maßgeschneiderte Softwarelösung für die Lagerverwaltung eines
+          mittelständischen Betriebs – von der Anforderungsanalyse bis zum Livegang.
+        </p>
+        <div class="project-link" onclick="openModal('modal4')">Mehr dazu</div>
+      </div>
+
+      <!-- Weitere Projekte nach Bedarf -->
+    </div>
+  </div>
+
+  <!-- Modal 1 -->
+  <div class="modal" id="modal1">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal1')">&times;</span>
+      <h2>Web-App für Online-Shopping</h2>
+      <h3>Technologien</h3>
+      <p>
+        • HTML, CSS, JavaScript, React, Node.js<br/>
+        • REST-API, MongoDB oder SQL<br/>
+        • Payment-Gateway (z. B. Stripe oder PayPal)
+      </p>
+      <h3>Funktionen</h3>
+      <p>
+        • Produktkatalog, Warenkorb, Checkout<br/>
+        • Benutzerkonten mit Login/Logout<br/>
+        • Responsive Design, einfache Navigation
+      </p>
+      <h3>Beschreibung</h3>
+      <p>
+        Eine Web-App, die Kunden ein komfortables Einkaufserlebnis bietet.
+        UX-Design und intuitive Benutzerführung standen im Vordergrund.
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div class="modal" id="modal2">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal2')">&times;</span>
+      <h2>Firmenwebsite</h2>
+      <h3>Technologien</h3>
+      <p>
+        • HTML, CSS, JavaScript<br/>
+        • Einfache PHP-Basis oder Headless CMS (z. B. Wordpress-API)
+      </p>
+      <h3>Funktionen</h3>
+      <p>
+        • Mehrsprachige Inhalte (DE, EN, ggf. weitere)<br/>
+        • On-Page SEO-Optimierung<br/>
+        • Kontaktformulare, Blog-Bereich
+      </p>
+      <h3>Beschreibung</h3>
+      <p>
+        Eine moderne Firmenwebsite mit ansprechendem Design und
+        klarer Informationsstruktur, die leicht zu pflegen ist.
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div class="modal" id="modal3">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal3')">&times;</span>
+      <h2>Mobile App</h2>
+      <h3>Technologien</h3>
+      <p>
+        • Native Android (Kotlin/Java)<br/>
+        • Verwendung von Android Jetpack-Komponenten
+      </p>
+      <h3>Funktionen</h3>
+      <p>
+        • Aufgaben- und Terminverwaltung<br/>
+        • Push-Benachrichtigungen, Kalenderintegration
+      </p>
+      <h3>Beschreibung</h3>
+      <p>
+        Eine einfach zu nutzende App für To-Do-Listen, Deadlines und Termine,
+        die Nutzer per Push über wichtige Ereignisse informiert.
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal 4 -->
+  <div class="modal" id="modal4">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal4')">&times;</span>
+      <h2>Individualsoftware</h2>
+      <h3>Technologien</h3>
+      <p>
+        • Java oder C# für Backend-Logik<br/>
+        • Datenbank-Anbindung (SQL oder NoSQL)<br/>
+        • Microservices und Docker für Skalierbarkeit
+      </p>
+      <h3>Funktionen</h3>
+      <p>
+        • Lagerverwaltung mit Echtzeit-Daten<br/>
+        • Reporting-Dashboards, Schnittstellen zu ERP-Systemen
+      </p>
+      <h3>Beschreibung</h3>
+      <p>
+        Von der detaillierten Anforderungsanalyse über das Design und die
+        Implementierung bis hin zu automatisierten Tests und Deployment
+        – eine passgenaue Lösung für ein mittelständisches Unternehmen.
+      </p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    // Klick auf das Overlay schließt das Modal
+    window.addEventListener('click', function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach((modal) => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
